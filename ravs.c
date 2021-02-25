@@ -99,10 +99,19 @@ void version_store_close(version_store_t *Store) {
 void version_store_change_create(version_store_t *Store, const char *AuthorName, size_t AuthorLength) {
 	Store->Change = string_store_alloc(Store->Changes);
 	string_store_writer_open(Store->Writer, Store->Changes, Store->Change);
-	change_t Change[1];
-	Change->Time = time(NULL);
-	Change->Author = string_index_insert(Store->Authors, AuthorName, AuthorLength);
-	string_store_writer_write(Store->Writer, Change, sizeof(change_t));
+	change_t Info[1];
+	Info->Time = time(NULL);
+	Info->Author = string_index_insert(Store->Authors, AuthorName, AuthorLength);
+	string_store_writer_write(Store->Writer, Info, sizeof(change_t));
+}
+
+void version_store_change_list(version_store_t *Store, uint32_t Change, int (*Callback)(void *Data, uint32_t Index), void *Data) {
+	string_store_reader_t Reader[1];
+	string_store_reader_open(Reader, Store->Changes, Change);
+	change_t Info[1];
+	string_store_reader_read(Reader, Info, sizeof(change_t));
+	uint32_t Index;
+	while (string_store_reader_read(Reader, &Index, 4) == 4) Callback(Data, Index);
 }
 
 size_t version_store_value_create(version_store_t *Store, void *Bytes, size_t Length) {
@@ -123,6 +132,7 @@ static int diff_write(struct bsdiff_stream *Stream, const void *Buffer, int Size
 }
 
 void version_store_value_update(version_store_t *Store, size_t Index, void *Bytes, size_t Length) {
+	string_store_writer_write(Store->Writer, &Index, 4);
 	uint32_t DiffIndex = fixed_store_alloc(Store->Blocks);
 	block_t *Block = fixed_store_get(Store->Blocks, Index);
 	size_t OldLength = string_store_size(Store->Values, Block->Value);
