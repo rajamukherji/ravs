@@ -101,7 +101,7 @@ void version_store_change_create(version_store_t *Store, const char *AuthorName,
 	string_store_writer_write(Store->Change, Change, sizeof(change_t));
 }
 
-size_t version_store_version_store_value_create(version_store_t *Store, void *Bytes, size_t Length) {
+size_t version_store_value_create(version_store_t *Store, void *Bytes, size_t Length) {
 	uint32_t Index = fixed_store_alloc(Store->Blocks);
 	string_store_writer_write(Store->Change, &Index, 4);
 	block_t *Block = fixed_store_get(Store->Blocks, Index);
