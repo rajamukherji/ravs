@@ -16,7 +16,7 @@ void version_store_close(version_store_t *Store);
 
 void version_store_change_create(version_store_t *Store, const char *AuthorName, size_t AuthorLength);
 
-void version_store_change_list(version_store_t *Store, uint32_t Change, int (*Callback)(void *Data, uint32_t Index));
+void version_store_change_list(version_store_t *Store, uint32_t Change, int (*Callback)(void *Data, uint32_t Index), void *Data);
 
 size_t version_store_value_create(version_store_t *Store, void *Bytes, size_t Length);
 
