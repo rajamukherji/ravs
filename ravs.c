@@ -161,7 +161,7 @@ size_t version_store_value_get(version_store_t *Store, size_t Index, void *Buffe
 	return string_store_get(Store->Values, Block->Value, Buffer, Space);
 }
 
-void version_store_value_history(version_store_t *Store, size_t Index, int (*Callback)(void *Data, time_t Time, uint32_t Author), void *Data) {
+void version_store_value_history(version_store_t *Store, size_t Index, int (*Callback)(void *Data, uint32_t Change, time_t Time, uint32_t Author), void *Data) {
 	block_t *Block = fixed_store_get(Store->Blocks, Index);
 	change_t Change[1];
 	string_store_get(Store->Changes, Block->Change, Change, sizeof(change_t));
@@ -169,7 +169,7 @@ void version_store_value_history(version_store_t *Store, size_t Index, int (*Cal
 	while ((Index = Block->Next) != INVALID_INDEX) {
 		Block = fixed_store_get(Store->Blocks, Index);
 		string_store_get(Store->Changes, Block->Change, Change, sizeof(change_t));
-		Callback(Data, Change->Time, Change->Author);
+		Callback(Data, Block->Change, Change->Time, Change->Author);
 	}
 }
 

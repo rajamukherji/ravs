@@ -26,7 +26,7 @@ size_t version_store_value_size(version_store_t *Store, size_t Index);
 
 size_t version_store_value_get(version_store_t *Store, size_t Index, void *Buffer, size_t Space);
 
-void version_store_value_history(version_store_t *Store, size_t Index, int (*Callback)(void *Data, time_t Time, uint32_t Author), void *Data);
+void version_store_value_history(version_store_t *Store, size_t Index, int (*Callback)(void *Data, uint32_t Change, time_t Time, uint32_t Author), void *Data);
 
 size_t version_store_value_revision_size(version_store_t *Store, size_t Index, size_t Change);
 
