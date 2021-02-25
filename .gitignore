@@ -1,5 +1,5 @@
-/libravs.a
-/ravs.o
+/*.a
+/*.o
 /.project
 /.cproject
 /.settings/
