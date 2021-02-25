@@ -6,6 +6,10 @@
 #include <string.h>
 #include <stdio.h>
 
+#ifdef RADB_MEM_GC
+#include <gc/gc.h>
+#endif
+
 typedef struct block_t block_t;
 typedef struct change_t change_t;
 
