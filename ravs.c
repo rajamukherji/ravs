@@ -151,6 +151,16 @@ void version_store_value_erase(version_store_t *Store, size_t Index) {
 
 }
 
+size_t version_store_value_size(version_store_t *Store, size_t Index) {
+	block_t *Block = fixed_store_get(Store->Blocks, Index);
+	return string_store_size(Store->Values, Block->Value);
+}
+
+size_t version_store_value_get(version_store_t *Store, size_t Index, void *Buffer, size_t Space) {
+	block_t *Block = fixed_store_get(Store->Blocks, Index);
+	return string_store_get(Store->Values, Block->Value, Buffer, Space);
+}
+
 void version_store_value_history(version_store_t *Store, size_t Index, int (*Callback)(void *Data, time_t Time, uint32_t Author), void *Data) {
 	block_t *Block = fixed_store_get(Store->Blocks, Index);
 	change_t Change[1];
