@@ -46,7 +46,7 @@ radb/libradb.a:
 	$(MAKE) -C radb
 
 libravs.a: radb/libradb.a $(common_objects) $(platform_objects)
-	ar rcs $@ radb/libradb.a $(common_objects) $(platform_objects)
+	ar rcs $@ $(common_objects) $(platform_objects) radb/libradb.a
 
 clean:
 	$(MAKE) -C radb clean
