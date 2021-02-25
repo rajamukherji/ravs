@@ -193,7 +193,7 @@ size_t version_store_value_revision_get(version_store_t *Store, size_t Index, si
 	if (Block->Change <= Change) return string_store_get(Store->Values, Block->Value, Bytes, Space);
 	void *Old = alloca(Block->Length);
 	void *New = alloca(Block->Length);
-	size_t OldSize = string_store_get(Store->Values, Block->Value, Bytes, Block->Length);
+	size_t OldSize = string_store_get(Store->Values, Block->Value, Old, Block->Length);
 	while ((Index = Block->Next) != INVALID_INDEX) {
 		Block = fixed_store_get(Store->Blocks, Index);
 		string_store_reader_t PatchReader[1];
