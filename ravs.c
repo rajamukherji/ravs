@@ -1,7 +1,7 @@
 #include "ravs.h"
 #include "radb/radb.h"
-#include "bsdiff/bsdiff.h"
-#include "bsdiff/bspatch.h"
+#include "bsdiff.h"
+#include "bspatch.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

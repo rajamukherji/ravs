@@ -17,7 +17,9 @@ else
 endif
 
 common_objects = \
-	ravs.o
+	ravs.o \
+	bsdiff.o \
+	bspatch.o
 
 platform_objects =
 
