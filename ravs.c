@@ -165,7 +165,7 @@ void version_store_value_history(version_store_t *Store, size_t Index, int (*Cal
 	block_t *Block = fixed_store_get(Store->Blocks, Index);
 	change_t Change[1];
 	string_store_get(Store->Changes, Block->Change, Change, sizeof(change_t));
-	Callback(Data, Change->Time, Change->Author);
+	Callback(Data, Block->Change, Change->Time, Change->Author);
 	while ((Index = Block->Next) != INVALID_INDEX) {
 		Block = fixed_store_get(Store->Blocks, Index);
 		string_store_get(Store->Changes, Block->Change, Change, sizeof(change_t));
