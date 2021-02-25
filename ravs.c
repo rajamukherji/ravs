@@ -18,8 +18,8 @@ struct version_store_t {
 	string_store_t *Values;
 	string_store_t *Changes;
 	string_index_t *Authors;
-	string_store_writer_t Change[1];
-	uint32_t OpenChange;
+	string_store_writer_t Writer[1];
+	uint32_t Change;
 };
 
 struct block_t {
@@ -55,7 +55,7 @@ version_store_t *version_store_create(const char *Prefix, size_t RequestedSize R
 	Store->Changes = string_store_create(StorePrefix, 16, 0 RADB_MEM_ARGS);
 	sprintf(StorePrefix, "%s_authors", Prefix);
 	Store->Authors = string_index_create(StorePrefix, 16, 0 RADB_MEM_ARGS);
-	Store->OpenChange = INVALID_INDEX;
+	Store->Change = INVALID_INDEX;
 	return Store;
 }
 
@@ -80,7 +80,7 @@ version_store_t *version_store_open(const char *Prefix RADB_MEM_PARAMS) {
 	Store->Changes = string_store_open(StorePrefix RADB_MEM_ARGS);
 	sprintf(StorePrefix, "%s_authors", Prefix);
 	Store->Authors = string_index_open(StorePrefix RADB_MEM_ARGS);
-	Store->OpenChange = INVALID_INDEX;
+	Store->Change = INVALID_INDEX;
 	return Store;
 }
 
@@ -97,19 +97,19 @@ void version_store_close(version_store_t *Store) {
 }
 
 void version_store_change_create(version_store_t *Store, const char *AuthorName, size_t AuthorLength) {
-	Store->OpenChange = string_store_alloc(Store->Changes);
-	string_store_writer_open(Store->Change, Store->Changes, Store->OpenChange);
+	Store->Change = string_store_alloc(Store->Changes);
+	string_store_writer_open(Store->Writer, Store->Changes, Store->Change);
 	change_t Change[1];
 	Change->Time = time(NULL);
 	Change->Author = string_index_insert(Store->Authors, AuthorName, AuthorLength);
-	string_store_writer_write(Store->Change, Change, sizeof(change_t));
+	string_store_writer_write(Store->Writer, Change, sizeof(change_t));
 }
 
 size_t version_store_value_create(version_store_t *Store, void *Bytes, size_t Length) {
 	uint32_t Index = fixed_store_alloc(Store->Blocks);
-	string_store_writer_write(Store->Change, &Index, 4);
+	string_store_writer_write(Store->Writer, &Index, 4);
 	block_t *Block = fixed_store_get(Store->Blocks, Index);
-	Block->Change = Store->OpenChange;
+	Block->Change = Store->Change;
 	Block->Next = INVALID_INDEX;
 	Block->Length = Length;
 	Block->Value = string_store_alloc(Store->Values);
@@ -141,7 +141,7 @@ void version_store_value_update(version_store_t *Store, size_t Index, void *Byte
 	DiffStream->free = free;
 	DiffStream->write = diff_write;
 	bsdiff(Bytes, Length, OldBytes, OldLength, DiffStream);
-	Block->Change = Store->OpenChange;
+	Block->Change = Store->Change;
 	Block->Next = DiffIndex;
 	if (Block->Length < Length) Block->Length = Length;
 	string_store_set(Store->Values, Block->Value, Bytes, Length);
