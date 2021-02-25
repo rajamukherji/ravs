@@ -1,0 +1,6 @@
+[submodule "radb"]
+	path = radb
+	url = https://github.com/rajamukherji/radb.git
+[submodule "bsdiff"]
+	path = bsdiff
+	url = https://github.com/mendsley/bsdiff
