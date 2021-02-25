@@ -92,7 +92,7 @@ void version_store_close(version_store_t *Store) {
 #endif
 }
 
-void change_create(version_store_t *Store, const char *AuthorName, size_t AuthorLength) {
+void version_store_change_create(version_store_t *Store, const char *AuthorName, size_t AuthorLength) {
 	Store->OpenChange = string_store_alloc(Store->Changes);
 	string_store_writer_open(Store->Change, Store->Changes, Store->OpenChange);
 	change_t Change[1];
@@ -101,7 +101,7 @@ void change_create(version_store_t *Store, const char *AuthorName, size_t Author
 	string_store_writer_write(Store->Change, Change, sizeof(change_t));
 }
 
-size_t value_create(version_store_t *Store, void *Bytes, size_t Length) {
+size_t version_store_version_store_value_create(version_store_t *Store, void *Bytes, size_t Length) {
 	uint32_t Index = fixed_store_alloc(Store->Blocks);
 	string_store_writer_write(Store->Change, &Index, 4);
 	block_t *Block = fixed_store_get(Store->Blocks, Index);
@@ -118,7 +118,7 @@ static int diff_write(struct bsdiff_stream *Stream, const void *Buffer, int Size
 	return 0;
 }
 
-void value_update(version_store_t *Store, size_t Index, void *Bytes, size_t Length) {
+void version_store_value_update(version_store_t *Store, size_t Index, void *Bytes, size_t Length) {
 	uint32_t DiffIndex = fixed_store_alloc(Store->Blocks);
 	block_t *Block = fixed_store_get(Store->Blocks, Index);
 	size_t OldLength = string_store_size(Store->Values, Block->Value);
@@ -143,11 +143,11 @@ void value_update(version_store_t *Store, size_t Index, void *Bytes, size_t Leng
 	string_store_set(Store->Values, Block->Value, Bytes, Length);
 }
 
-void value_erase(version_store_t *Store, size_t Index) {
+void version_store_value_erase(version_store_t *Store, size_t Index) {
 
 }
 
-void value_history(version_store_t *Store, size_t Index, int (*Callback)(void *Data, time_t Time, uint32_t Author), void *Data) {
+void version_store_value_history(version_store_t *Store, size_t Index, int (*Callback)(void *Data, time_t Time, uint32_t Author), void *Data) {
 	block_t *Block = fixed_store_get(Store->Blocks, Index);
 	change_t Change[1];
 	string_store_get(Store->Changes, Block->Change, Change, sizeof(change_t));
@@ -159,7 +159,7 @@ void value_history(version_store_t *Store, size_t Index, int (*Callback)(void *D
 	}
 }
 
-size_t value_revision_size(version_store_t *Store, size_t Index, size_t Change) {
+size_t version_store_value_revision_size(version_store_t *Store, size_t Index, size_t Change) {
 	block_t *Block = fixed_store_get(Store->Blocks, Index);
 	if (Block->Change <= Change) return string_store_size(Store->Values, Block->Value);
 	while ((Index = Block->Next) != INVALID_INDEX) {
@@ -174,7 +174,7 @@ static int patch_read(const struct bspatch_stream *Stream, void *Buffer, int Siz
 	return 0;
 }
 
-size_t value_revision_get(version_store_t *Store, size_t Index, size_t Change, void *Bytes, size_t Space) {
+size_t version_store_value_revision_get(version_store_t *Store, size_t Index, size_t Change, void *Bytes, size_t Space) {
 	block_t *Block = fixed_store_get(Store->Blocks, Index);
 	if (Block->Change <= Change) return string_store_get(Store->Values, Block->Value, Bytes, Space);
 	void *Old = alloca(Block->Length);
